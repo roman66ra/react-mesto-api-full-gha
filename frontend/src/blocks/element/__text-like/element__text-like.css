@@ -1,0 +1,11 @@
+.element__text-like {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+@media screen and (max-width: 320px) {
+    .element__text-like {
+        margin-bottom: 6px;
+    }
+}

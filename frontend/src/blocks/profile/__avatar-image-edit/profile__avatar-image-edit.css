@@ -1,0 +1,16 @@
+.profile__avatar-image-edit {
+    margin: 0;
+    padding: 0;
+    width: 120px;
+    height: 120px;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    position: absolute;
+  }
+  
+  .profile__avatar-image-edit:hover {
+    opacity: 0.8;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.8) url('../../../images/Vector.svg') no-repeat center;
+  }

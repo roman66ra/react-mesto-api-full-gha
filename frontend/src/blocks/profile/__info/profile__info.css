@@ -1,0 +1,15 @@
+.profile__info {
+    max-width: 336px;
+    display: grid;
+    align-self: center;
+    grid-template-columns: 294px 1fr;
+}
+
+
+@media screen and (max-width: 380px) {
+    .profile__info {
+        margin-top: 22.25px;
+        grid-template-columns: 189px 1fr;
+        margin-left: 25px;
+    }
+}

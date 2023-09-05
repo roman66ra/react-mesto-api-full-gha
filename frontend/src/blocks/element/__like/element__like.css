@@ -1,0 +1,22 @@
+.element__like {
+    width: 22px;
+    height: 19px;
+    background-image: url(../../../images/Group.svg);
+    object-fit: contain;
+    border: 0;
+    background-color: #fff;
+    margin-bottom: 3px;
+    padding-left: 1px;
+    transition: opacity 0.5s ease;
+}
+
+.element__like:hover{
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    .element__like {
+        margin-top: 25px;
+    }
+}
