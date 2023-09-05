@@ -102,6 +102,6 @@ class Api {
 }
 }
 
-const api = new Api({url: 'http://api.romanramesto.nomoredomainsicu.ru'})
+const api = new Api({url: 'https://api.romanramesto.nomoredomainsicu.ru'})
 
 export default api
