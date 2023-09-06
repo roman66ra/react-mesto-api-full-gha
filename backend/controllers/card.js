@@ -14,21 +14,11 @@ module.exports.getCards = (req, res, next) => {
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => {
-      Card.findById(card._id)
-        .orFail()
-        .then((data) => res.status(httpConstants.HTTP_STATUS_CREATED).send(data))
-        .catch((error) => {
-          if (error instanceof mongoose.Error.DocumentNotFoundError) {
-            next(new NotFoundError('Карточка с введенным ID не найдена'));
-          } else {
-            next(error);
-          }
-        });
-    })
+    .orFail()
+    .then((card) => res.status(httpConstants.HTTP_STATUS_CREATED).res.send({ data: card }))
     .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError(error.message));
+      if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Карточка с введенным ID не найдена'));
       } else {
         next(error);
       }
@@ -37,6 +27,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
+    .orFail()
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Вы не являетесь владельцем карточки');
@@ -55,7 +46,7 @@ module.exports.deleteCardById = (req, res, next) => {
         });
     })
     .catch((err) => {
-      if (err.name === 'TypeError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
         next(err);

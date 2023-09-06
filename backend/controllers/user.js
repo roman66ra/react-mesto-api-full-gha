@@ -1,3 +1,4 @@
+require('dotenv').config();
 const httpConstants = require('http2').constants;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -6,6 +7,8 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
+
+const SECRET_KEY = process.env;
 
 module.exports.getUser = (req, res, next) => {
   User.find({})
@@ -53,42 +56,38 @@ module.exports.getUserById = (req, res, next) => {
 
 module.exports.patchProfile = (req, res, next) => {
   const { name, about } = req.body;
-  if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-      .orFail()
-      .then((user) => { res.status(httpConstants.HTTP_STATUS_OK).send(user); })
-      .catch((error) => {
-        if (error instanceof mongoose.Error.ValidationError) {
-          next(new BadRequestError(error.message));
-        } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-          next(new NotFoundError('Пользователь с укзаанным id не найден'));
-        } else {
-          next(error);
-        }
-      });
-  }
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .orFail()
+    .then((user) => { res.status(httpConstants.HTTP_STATUS_OK).send(user); })
+    .catch((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(error.message));
+      } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Пользователь с укзаанным id не найден'));
+      } else {
+        next(error);
+      }
+    });
 };
 
 module.exports.patchAvatar = (req, res, next) => {
-  if (req.user._id) {
-    User.findByIdAndUpdate(
-      req.user._id,
-      { avatar: req.body.avatar },
-      { new: true, runValidators: true },
-    )
-      .orFail()
-      .then((user) => { res.status(httpConstants.HTTP_STATUS_OK).send(user); })
-      .catch(((error) => {
-        if (error instanceof mongoose.Error.ValidationError) {
-          next(new BadRequestError(error.message));
-        } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
-          next(new NotFoundError('Пользователь с укзаанным id не найден'));
-        } else {
-          next(error);
-        }
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar: req.body.avatar },
+    { new: true, runValidators: true },
+  )
+    .orFail()
+    .then((user) => { res.status(httpConstants.HTTP_STATUS_OK).send(user); })
+    .catch(((error) => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(error.message));
+      } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Пользователь с укзаанным id не найден'));
+      } else {
+        next(error);
       }
-      ));
-  }
+    }
+    ));
 };
 
 module.exports.login = (req, res, next) => {
@@ -96,7 +95,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
       res.send({ token });
     })
     .catch((err) => {
