@@ -14,11 +14,15 @@ module.exports.getCards = (req, res, next) => {
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .orFail()
-    .then((card) => res.status(httpConstants.HTTP_STATUS_CREATED).res.send({ data: card }))
+    .then((card) => {
+      Card.findById(card._id);
+      res.status(httpConstants.HTTP_STATUS_CREATED).send(card);
+    })
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Карточка с введенным ID не найдена'));
+      } if (error instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(error.message));
       } else {
         next(error);
       }
