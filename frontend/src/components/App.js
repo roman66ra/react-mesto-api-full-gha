@@ -28,8 +28,8 @@ export default function App() {
   useEffect(() => {
     handleTokenCheck();
     Promise.all([
-      api.getInitialCards(localStorage.getItem("token")),
       api.getUserInfo(localStorage.getItem("token")),
+      api.getInitialCards(localStorage.getItem("token")),
     ])
       .then((result) => {
         const [items, userInfo] = result;
@@ -39,7 +39,6 @@ export default function App() {
       .catch((err) => {
         console.log(err);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedIn]);
 
   const navigate = useNavigate();
