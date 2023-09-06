@@ -9,7 +9,7 @@
 
 ## Ссылки на проект
 
-IP-адрес 158.160.57.70
+IP 158.160.57.70
 
 Frontend https://romanramesto.nomoredomainsicu.ru
 
