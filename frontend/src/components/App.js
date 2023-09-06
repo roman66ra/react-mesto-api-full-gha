@@ -14,38 +14,6 @@ import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import { checkToken } from "../utils/auth";
 
 export default function App() {
-  useEffect(() => {
-    handleTokenCheck();
-    Promise.all([api.getInitialCards(localStorage.getItem("token")), api.getUserInfo(localStorage.getItem("token"))])
-      .then((result) => {
-        const [items, userInfo] = result;
-        setCurrentUser(userInfo);
-        setCards(items);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const navigate = useNavigate();
-
-  const handleTokenCheck = () => {
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      checkToken(token)
-        .then((res) => {
-          if (res) {
-            setLoggedIn(true);
-            navigate("/", { replace: true });
-            setEmail(res.email)
-          }
-        })
-        .catch((res) => console.log(res));
-    }
-  };
-
   const [loggedIn, setLoggedIn] = useState(false);
   const [cards, setCards] = useState([]);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -56,6 +24,40 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    handleTokenCheck();
+    Promise.all([
+      api.getInitialCards(localStorage.getItem("token")),
+      api.getUserInfo(localStorage.getItem("token")),
+    ])
+      .then((result) => {
+        const [items, userInfo] = result;
+        setCurrentUser(userInfo);
+        setCards(items);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loggedIn]);
+
+  const navigate = useNavigate();
+
+  const handleTokenCheck = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      checkToken(token)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+            navigate("/", { replace: true });
+            setEmail(res.email);
+          }
+        })
+        .catch((res) => console.log(res));
+    }
+  };
 
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -190,7 +192,7 @@ export default function App() {
           />
           <Route
             path="/sign-in"
-            element={<Login handleLogin={handleLogin} setEmail={setEmail}/>}
+            element={<Login handleLogin={handleLogin} setEmail={setEmail} />}
           />
         </Routes>
 
