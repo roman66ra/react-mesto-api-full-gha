@@ -16,7 +16,7 @@ export default function Main({
   email,
 }) {
   const currentUser = useContext(CurrentUserContext);
-
+  
   return (
     <>
       <Header
@@ -58,6 +58,7 @@ export default function Main({
         </section>
         <section className="elements">
           {cards.map((data) => {
+            
             return (
               <Card
                 card={data}
