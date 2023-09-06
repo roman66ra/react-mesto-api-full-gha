@@ -30,8 +30,10 @@ const limiter = rateLimit({
 
 app.use(bodyParser.json());
 app.use(helmet());
-app.use(limiter);
+
 app.use(requestLogger);
+
+app.use(limiter);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -43,7 +45,7 @@ app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().pattern(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/),
     password: Joi.string().required().min(2),
-  }).unknown(true),
+  }),
 }), login);
 
 app.post('/signup', celebrate({
@@ -53,18 +55,18 @@ app.post('/signup', celebrate({
     avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
     email: Joi.string().required().pattern(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/),
     password: Joi.string().required().min(2),
-  }).unknown(true),
+  }),
 }), postUser);
 
 app.use('/', auth, require('./routes/user'));
 app.use('/', auth, require('./routes/card'));
 
-app.use(errorLogger);
-app.use(errors());
-
-app.use((req, res, next) => {
+app.use(auth, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+app.use(errorLogger);
+app.use(errors());
 
 app.use(errorHandler);
 
